@@ -11,8 +11,8 @@
 
 
 // Replace with your network credentials
-const char* ssid = "iS-Home2";
-const char* password = "NDXSTNYYDC";
+const char* ssid = "Your Wifi SSID";
+const char* password = "Your Wifi Password";
 
 #define DHTPIN 2     // Digital pin connected to the DHT sensor
 
@@ -40,8 +40,6 @@ unsigned long previousMillis = 0;    // will store last time DHT was updated
 const long interval = 10000;  
 
 const char index_html[] PROGMEM = R"rawliteral(
-
-
 
 <!DOCTYPE HTML><html>
 <head>
