@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="javascript.js"></script>
+</head>
+<title>$NAME</title>
+<body>
+
+<nav class="navbar navbar-secondary bg-secondary">
+ 
+ <!-- Button trigger history modal-->
+ <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#historyModal">
+<i class="fas fa-chart-bar"></i> 
+</button>
+
+<!-- History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="settomgsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-chart-bar"></i> 24 hour log</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+<!--Here goes the 24 hour temp & humidity history-->
+      
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark btn-sm" data-dismiss="modal">Close</button>       
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--TITLE-->
+<h4 class="mb-1 text-light"><i class="fas fa-warehouse"></i> $NAME</h4>
+
+
+ <!-- Button trigger settings modal -->
+<button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#settingsModal">
+<i class="fas fa-cogs"></i> 
+</button>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settomgsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-cogs"></i> Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+<table class="table table-hover text-justify">
+<tbody>
+    <tr>
+      <th scope="row" class="border-0"><i class="fas fa-warehouse"></i><code> Title:</code> $NAME </th> <th scope="row" class="border-0"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
+</a></div></th>
+  </tr>
+  <tr>
+      <th scope="row"><i class="fas fa-calendar"></i><code> Date:</code> $DATE </th> <th scope="row"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
+</a></div></th>
+  </tr>
+  <tr>
+      <th scope="row"><i class="fas fa-wifi"></i><code> WiFi:</code> $WIFI </th> <th scope="row"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
+</a></div></th>
+  </tr>
+
+ </tbody>
+</table>
+      
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark btn-sm" data-dismiss="modal">Close</button>       
+      </div>
+    </div>
+  </div>
+</div>
+ 
+</nav>
+
+<div class="card bg-secondary  border-dark m-3 mb-3">
+
+<div class="card-body text-center">
+<!--Temperature & Humidity START-->
+<div class="row">
+  <div class="col m-auto">
+<!--Temperature-->
+<div class="alert alert-light mx-auto" role="alert">
+   <span class="h4" id="tempIcon"></span>
+   <span class="h4" id="temperature">%TEMPERATURE%</span>
+   <sup class="units">&deg;C</sup>
+</div>
+  </div>  
+  <div class="col m-auto">
+<!--Humidity-->
+  <div class="alert alert-light mx-auto" role="alert">
+   <span class="h4" id="humIcon"></span>
+   <span class="h4" id="humidity">%HUMIDITY%</span>
+   <sup class="units">&#37;</sup>
+</div>
+  </div>
+</div>
+
+<!--Temperature & Humidity END-->
+
+<!--On/Off & Light START-->
+<div class="alert alert-light" role="alert">
+   <span class="h4" id="lightStatus"></span>
+   <span class="h4" id="light"> %LUX%</span>
+   <sup class="units">lx</sup>
+</div>
+<!--On/Off & Light END-->
+
+<!--DAY & WEEK START-->
+<div class="row">
+  <div class="col m-auto">
+    <div class="alert alert-light" role="alert"><h4><p id="days" class="mb-0"></p></h4></div>
+  </div>
+  <div class="col m-auto">
+    <div class="alert alert-light" role="alert"><h4><p id="weeks" class="mb-0"></p></h4></div>
+  </div>
+</div>
+<!--DAY & WEEK END-->
+   
+<!--STAGE START-->
+<div class="alert alert-success" role="alert">
+  <span class="h4"><p id="stage" class="mb-0"></p></span>
+</div>  
+<!--STAGE END-->
+
+</div>
+</div>
+ 
+ <!-- DO NOT REMOVE - FOOTER START - DO NOT REMOVE -->
+<div class="footer text-center">
+ <i class="fas fa-square"></i> BlackB0x &reg; All Rights Reserved</span>
+</div>  
+<!-- DO NOT REMOVE - FOOTER END - DO NOT REMOVE -->
+
+</body>
+</html>
+
