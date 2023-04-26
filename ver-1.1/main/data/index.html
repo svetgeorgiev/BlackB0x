@@ -2,15 +2,15 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="https://revotorsys.com/assets/favico2.ico"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="javascript.js"></script>
 </head>
-<title>$NAME</title>
+<title></title>
 <body>
 
 <nav class="navbar navbar-secondary bg-secondary">
@@ -43,7 +43,7 @@
 </div>
 
 <!--TITLE-->
-<h4 class="mb-1 text-light"><i class="fas fa-warehouse"></i> $NAME</h4>
+<h4 class="mb-1 text-light"><i class="fas fa-warehouse"></i> <span id="nameDisplay"></span></h4>
 
 
  <!-- Button trigger settings modal -->
@@ -66,11 +66,11 @@
 <table class="table table-hover text-justify">
 <tbody>
     <tr>
-      <th scope="row" class="border-0"><i class="fas fa-warehouse"></i><code> Title:</code> $NAME </th> <th scope="row" class="border-0"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
+      <th scope="row" class="border-0"><i class="fas fa-warehouse"></i><code> Title:</code> <span id="nameDisplay"></span> </th> <th scope="row" class="border-0"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
 </a></div></th>
   </tr>
   <tr>
-      <th scope="row"><i class="fas fa-calendar"></i><code> Date:</code> $DATE </th> <th scope="row"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
+      <th scope="row"><i class="fas fa-calendar"></i><code> Date:</code> <span id="startDateDisplay"></span> </th> <th scope="row"><div class="text-right"><a href="#"><i class="fas fa-pencil-alt"></i>
 </a></div></th>
   </tr>
   <tr>
@@ -149,6 +149,120 @@
  <i class="fas fa-square"></i> BlackB0x &reg; All Rights Reserved</span>
 </div>  
 <!-- DO NOT REMOVE - FOOTER END - DO NOT REMOVE -->
+
+<!-- Custom JavaScript -->
+<script>
+setInterval(function() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      const div = document.getElementById("temperature");
+      const temp = +this.responseText;
+      div.innerHTML = temp;
+      
+      let color = "#D4EDDA"; // default
+      if (temp < 20) color = "#CCE5FF";
+      else if (temp > 30) color = "#F8D7DA";
+      div.closest(".alert.alert-light").style.backgroundColor=color; 
+      
+      let tempIcon = "";
+      if (temp < 20) {
+        tempIcon = "<i class=\"fas fa-thermometer-empty\"></i>";
+      } else if (temp > 30) {
+        tempIcon = "<i class=\"fas fa-thermometer-full\"></i>";
+      } else {
+        tempIcon = "<i class=\"fas fa-thermometer-half\"></i>";
+      }
+      document.getElementById("tempIcon").innerHTML = tempIcon;
+    }
+  };
+  xhttp.open("GET", "/temperature", true);
+  xhttp.send();
+}, 1000);
+
+setInterval(function() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      const div = document.getElementById("humidity");
+      const humidity = this.responseText;
+      div.innerHTML = humidity;
+      
+      let color = "#D4EDDA"; // default
+      if (humidity < 35) color = "#F8D7DA";
+      else if (humidity > 90) color = "#F8D7DA";
+      div.closest(".alert.alert-light").style.backgroundColor=color; 
+      
+      let humIcon = "";
+      if (humidity < 35) {
+        humIcon = "<i class=\"fas fa-tint-slash\"></i>";
+      } else if (humidity > 90) {
+        humIcon = "<i class=\"fas fa-water\"></i>";
+      } else {
+        humIcon = "<i class=\"fas fa-tint\"></i>";
+      }
+      document.getElementById("humIcon").innerHTML = humIcon;
+    }
+  };
+  xhttp.open("GET", "/humidity", true);
+  xhttp.send();
+}, 1000);
+
+setInterval(function() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      const div = document.getElementById("light");
+      const light = this.responseText;
+      div.innerHTML = light;
+      
+      let color = "#FFF3CD"; // default
+      if (light < 5) color = "#2E2626";
+      else if (light > 5) color = "#FFF3CD";
+      div.closest(".alert.alert-light").style.backgroundColor=color; 
+      
+      let lightStatus = "";
+      if (light < 4) {
+        lightStatus = "<i class=\"fas fa-moon\"></i> Night";
+      } else {
+        lightStatus = "<i class=\"fas fa-sun\"></i> Day";
+      }
+      document.getElementById("lightStatus").innerHTML = lightStatus;
+    }
+  };
+  xhttp.open("GET", "/lux", true);
+  xhttp.send();
+}, 1000);
+</script>
+
+<script>
+let today = new Date().toISOString().slice(0, 10)
+const startDate  = '2023-04-10'; // Start Date 
+document.getElementById("startDateDisplay").innerHTML = startDate;
+const endDate    = today; // Today's Date
+{
+const diffInMs   = new Date(endDate) - new Date(startDate)
+const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+document.getElementById("days").innerHTML = ("Day: ") + diffInDays; // Day Counter 
+const diffInWeeks = diffInMs / (1000 * 60 * 60 * 24 * 7);
+document.getElementById("weeks").innerHTML = ("Week: ") + (diffInWeeks).toFixed(); // Week Counter 
+if (diffInWeeks < 4) {
+  stageStatus = ("<i class=\"fas fa-seedling\" ></i>  Vegetation");
+} else if (diffInWeeks > 6) {
+  stageStatus = "<i class=\"fas fa-cannabis\" ></i> Budding";
+} else {
+  stageStatus = "<i class=\"fas fa-leaf\" ></i> Flowering";
+}
+document.getElementById("stage").innerHTML = stageStatus;
+}
+</script>
+
+<script>
+   const name = 'Garage Tent'; // Name of the tent
+  document.getElementById("nameDisplay").innerHTML = name;
+  document.title = name;
+</script>
+
 
 </body>
 </html>

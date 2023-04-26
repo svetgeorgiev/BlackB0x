@@ -2,23 +2,20 @@
 #include <FS.h>                 // file system library
 #include <DHT.h>                // library for DHT temperature and humidity sensor
 #include <Wire.h>               // library for I2C communication
-#include <Hash.h>               // library for hash functions
+#include <WiFi.h>
 #include <BH1750.h>             // library for BH1750 light sensor
 #include <SPIFFS.h>             // SPI Flash File System library
 #include <Arduino.h>            // library for Arduino core functions
-#include <ESP8266WiFi.h>        // library for ESP8266 Wi-Fi module
-#include <ESPAsyncTCP.h>        // library for asynchronous TCP/IP communication
 #include <Adafruit_Sensor.h>    // library for Adafruit sensors
-#include <ESPAsyncWebServer.h>  // library for asynchronous web server
-
+#include <ESPAsyncWebSrv.h>  // library for asynchronous web server
 
 // Replace with your network credentials
-const char * ssid = "SetYourWiFi"; // SSID of the Wi-Fi network to connect to
-const char * password = "SetWiFiPassword"; // Password of the Wi-Fi network
+const char * ssid = "iS-Home"; // SSID of the Wi-Fi network to connect to
+const char * password = "tHfMPKZscsadHKk2"; // Password of the Wi-Fi network
 
-#define DHTPIN 2 // Digital pin connected to the DHT sensor
+#define DHTPIN 13 // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22 // DHT 22 (AM2302)
-#define GREEN_LED_PIN 16 // Digital pin connected to the green LED
+#define GREEN_LED_PIN 2 // Digital pin connected to the green LED
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
 BH1750 lightMeter; // BH1750 object
@@ -39,8 +36,8 @@ AsyncWebServer server(80); // create an asynchronous web server on port 80
 // The value will quickly become too large for an int to store
 unsigned long previousMillis = 0; // will store last time DHT was updated
 
-// Updates DHT readings every 10 seconds
-const long interval = 10000; // update interval in milliseconds
+// Updates DHT readings every 1 second
+const long interval = 1000; // update interval in milliseconds
 
 // Replaces placeholder with DHT values
 String processor(const String &
@@ -60,32 +57,26 @@ void setup() {
     // Serial port for debugging purposes
     Serial.begin(9600); // initialize serial communication with a baud rate of 9600
     dht.begin(); // initialize the DHT sensor
-    Wire.begin(5, 4); // initialize I2C communication with SDA on GPIO5 and SCL on GPIO4
+    Wire.begin(); // initialize I2C communication with SDA on GPIO5 and SCL on GPIO4
     lightMeter.begin(); // initialize the BH1750 sensor
+    //
     pinMode(GREEN_LED_PIN, OUTPUT); // set the green LED pin as an output
-
-    //Hostname 
-    String routername = "BlackB0x Grow Monitor"; // set the hostname for the ESP8266 module
-    wifi_station_set_hostname(routername.c_str()); // set the hostname for the Wi-Fi station
-    WiFi.mode(WIFI_AP_STA); // set the Wi-Fi mode to station and access point
 
     // Connect to Wi-Fi
     WiFi.begin(ssid, password); // Connect to Wi-Fi with specified SSID and password
     Serial.println("Connecting to WiFi");
     server.on("/", HTTP_GET, handleRoot);
-    server.on("/data", HTTP_GET, handleData);
     while (WiFi.status() != WL_CONNECTED) { // Wait until Wi-Fi is connected
       delay(5000);
       Serial.println(".");
     }
 
-    // Print ESP8266 Local IP Address
-    Serial.println(WiFi.localIP()); // Print local IP address of ESP8266
-
-    // Route for root / web page
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) { // Handle HTTP GET request for root URL
-      request -> send_P(200, "text/html", index_html, processor); // Send response with specified HTML page and data processor function
-    });
+    // Print ESP32 Local IP Address
+    Serial.println(WiFi.localIP()); // Print local IP address of ESP32
+    
+    server.begin();
+    
+    // Route for temperature, humidity and lux
     server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest * request) { // Handle HTTP GET request for temperature data
       request -> send_P(200, "text/plain", String(t, 1).c_str()); // Send response with temperature data as plain text
     });
@@ -100,11 +91,9 @@ if (!SPIFFS.begin()) {
     // Handle the error here (e.g. log the error, display an error message, etc.)
   } else {
     // Continue with the setup if SPIFFS is successfully mounted
-    switchOnTone(); // Indicate with "Switching ON" sound
-    Serial.println("Home Position Updated: " + String(homeLatString) + " / " + String(homeLngString));
-  }
+  
+ }
 }
-
     void loop() {
       digitalWrite(GREEN_LED_PIN, HIGH); // Turn on the green LED
       unsigned long currentMillis = millis(); // Get current time
@@ -142,7 +131,9 @@ if (!SPIFFS.begin()) {
     }
 
 void handleRoot(AsyncWebServerRequest * request) {
-  // Read temperature as Celsius (the default)
+  String html;
+
+ // Read temperature as Celsius (the default)
   float newT = dht.readTemperature(); // Read temperature from DHT sensor
   // if temperature read failed, don't change t value
   if (isnan(newT)) {
@@ -167,16 +158,15 @@ void handleRoot(AsyncWebServerRequest * request) {
     lux = newLUX; // Update light value
   }
   
-  // Open the HTML file
+  // Open the HTML file from the data directory
   File file = SPIFFS.open("/index.html", "r");
+  html = file.readString(); // read the contents of the file into a String
   if (!file) {
     Serial.println("Failed to open file");
     request->send(500);
     return;
   }
-  
-  // Read the contents of the file into a String
-  String html = file.readString();
+ 
   file.close();
   
   // Replace the placeholders in the HTML file with the sensor values
