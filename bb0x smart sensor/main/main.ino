@@ -92,6 +92,8 @@ if (isnan(newLUX)) {
 
 // Format data as JSON
 String json_data = "{\"crop_id\": " + String(crop_id) + ", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"light_intensity\": " + String(light_intensity) + "}";
+// Format data as JSON
+String json_data = "{\"crop_id\": " + String((int)crop_id) + ", \"temperature\": " + String(temperature, 2) + ", \"humidity\": " + String(humidity, 2) + ", \"light_intensity\": " + String((int)light_intensity) + "}";
 
 // Send data to API endpoint
 WiFiClient client;
