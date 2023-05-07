@@ -24,9 +24,9 @@ DHT dht(DHTPIN, DHTTYPE); // DHT object
 BH1750 lightMeter; // BH1750 object
 
 // Read sensor data
-float temperature = dht.readTemperature();
-float humidity = dht.readHumidity();
-float light_intensity = lightMeter.readLightLevel();
+float temperature;
+float humidity;
+float light_intensity;
   
 const int GREEN_LED_PIN = 2; // Define green LED pin
 unsigned long previousMillis = 0; // Time when previous update occurred
@@ -44,9 +44,9 @@ void setup() {
     // Connect to Wi-Fi
     WiFi.begin(ssid, password); // Connect to Wi-Fi with specified SSID and password
     Serial.println("Connecting to WiFi");
-      while (WiFi.status() != WL_CONNECTED) { // Wait until Wi-Fi is connected
-      delay(5000);
-      Serial.println(".");
+    while (WiFi.status() != WL_CONNECTED) { // Wait until Wi-Fi is connected
+        delay(5000);
+        Serial.print(".");
     }
 
     // Print ESP32 Local IP Address
@@ -54,63 +54,64 @@ void setup() {
  }
 
 void loop() {
+static unsigned long previousMillis = 0;
+const long interval = 10000;
+unsigned long currentMillis = millis();
 
+if (currentMillis - previousMillis >= interval) {
+previousMillis = currentMillis;
 
-  // Check if specified interval has elapsed
-  if (millis() - previousMillis >= interval) {
-    // save the last time you updated the DHT values
-    previousMillis = millis(); // Update previous time to current time
-    // Read temperature as Celsius (the default)
-    float newT = dht.readTemperature(); // Read temperature from DHT sensor
-    // if temperature read failed, don't change t value
-    if (isnan(newT)) {
-      Serial.println("Failed to read from DHT sensor!");
-    } else {
-      temperature = newT; // Update temperature value
-      Serial.println(temperature);
-    }
-    // Read Humidity
-    float newH = dht.readHumidity(); // Read humidity from DHT sensor
-    // if humidity read failed, don't change h value 
-    if (isnan(newH)) {
-      Serial.println("Failed to read from DHT sensor!");
-    } else {
-      humidity = newH; // Update humidity value
-      Serial.println(humidity);
-    }
-    // Read Light
-    float newLUX = lightMeter.readLightLevel(); // Read light level from light sensor
-    // if light read failed, don't change lux value 
-    if (isnan(newLUX)) {
-      Serial.println("Failed to read from Light sensor!");
-    } else {
-      light_intensity = newLUX; // Update light value
-      Serial.println(light_intensity);
-    }
-  }
-  
-      
-  // Format data as JSON
-  String json_data = "{\"crop_id\": " + String(crop_id) + ", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"light_intensity\": " + String(light_intensity) + "}";
+arduino
 
-  // Send data to API endpoint
-  WiFiClient client;
-  HTTPClient http;
-  Serial.print("Sending data to API endpoint...");
-  if (http.begin(client, website)) {
-    http.addHeader("Content-Type", "application/json");
-    http.addHeader("Authorization", "Bearer " + String(api_key));
-    int http_code = http.POST(json_data);
-    if (http_code == 200) {
-      Serial.println("Success");
-    } else {
-      Serial.println("Failed");
-    }
-    http.end();
+// Read temperature as Celsius (the default)
+float newT = dht.readTemperature(); // Read temperature from DHT sensor
+if (isnan(newT)) {
+  Serial.println("Failed to read temperature from DHT sensor!");
+} else {
+  temperature = newT; // Update temperature value
+  Serial.println("Temperature: " + String(temperature) + "°C");
+}
+
+// Read humidity
+float newH = dht.readHumidity(); // Read humidity from DHT sensor
+if (isnan(newH)) {
+  Serial.println("Failed to read humidity from DHT sensor!");
+} else {
+  humidity = newH; // Update humidity value
+  Serial.println("Humidity: " + String(humidity) + "%");
+}
+
+// Read light
+float newLUX = lightMeter.readLightLevel(); // Read light level from light sensor
+if (isnan(newLUX)) {
+  Serial.println("Failed to read light level from sensor!");
+} else {
+  light_intensity = newLUX; // Update light value
+  Serial.println("Light intensity: " + String(light_intensity) + " lx");
+}
+
+// Format data as JSON
+String json_data = "{\"crop_id\": " + String(crop_id) + ", \"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + ", \"light_intensity\": " + String(light_intensity) + "}";
+
+// Send data to API endpoint
+WiFiClient client;
+HTTPClient http;
+Serial.print("Sending data to API endpoint...");
+digitalWrite(GREEN_LED_PIN, HIGH); // turn on LED to indicate data is being sent
+if (http.begin(client, website)) {
+  http.addHeader("Content-Type", "application/json");
+  http.addHeader("Authorization", "Bearer " + String(api_key));
+  int http_code = http.POST(json_data);
+  if (http_code == 200) {
+    Serial.println("Success");
   } else {
-    Serial.println("Unable to connect to API endpoint");
+    Serial.println("Failed (HTTP error code " + String(http_code) + ")");
   }
+  http.end();
+} else {
+  Serial.println("Unable to connect to API endpoint");
+}
+digitalWrite(GREEN_LED_PIN, LOW); // turn off LED to indicate data transmission is complete
 
-  // Wait for 10 seconds before sending the next data
-  delay(10000);
+}
 }
