@@ -10,8 +10,8 @@
 #include <ESPAsyncWebSrv.h>  // library for asynchronous web server
 
 // Replace with your network credentials
-const char * ssid = "iS-Home"; // SSID of the Wi-Fi network to connect to
-const char * password = "tHfMPKZscsadHKk2"; // Password of the Wi-Fi network
+const char * ssid = "SSID"; // SSID of the Wi-Fi network to connect to
+const char * password = "PASSWORD"; // Password of the Wi-Fi network
 
 #define DHTPIN 13 // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22 // DHT 22 (AM2302)
